@@ -1,8 +1,9 @@
-require "fewbytes/sns/version"
+require 'fewbytes/sns/version'
+require 'aws-sdk'
 
 module Fewbytes
+  # Comment
   module Sns
-    clas
     # Your code goes here...
   end
 end
