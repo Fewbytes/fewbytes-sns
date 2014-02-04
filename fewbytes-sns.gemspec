@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Fewbytes::Sns::VERSION
   spec.authors       = ['Alex SHD']
   spec.email         = ['alex@fewbytes.com']
-  spec.summary       = %q{CMD for sending aws sns messeges.}
-  spec.description   = %q{CMD for sending aws sns messeges to distrebuted systems.}
+  spec.summary       = %q{CMD for sending aws sns messages.}
+  spec.description   = %q{CMD for sending aws sns messages to distributed systems.}
   spec.homepage      = 'http://www.fewbytes.com'
   spec.license       = 'MIT'
 
@@ -23,6 +23,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'aws-sdk'
   spec.add_development_dependency 'rubocop'
   spec.add_development_dependency 'trollop'
-  spec.add_development_dependency 'rcodetools'
   spec.add_development_dependency 'json'
 end

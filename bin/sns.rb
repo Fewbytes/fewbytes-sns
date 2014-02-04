@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -wU
+#!/usr/bin/env ruby
 
 require 'rubygems'
 require 'yaml'
@@ -8,16 +8,16 @@ require 'trollop'
 require 'json'
 
 opts = Trollop.options do
-  opt :execute, 'command to run',           short: '-e'
-  opt :config,  'config file location',     short: '-c'
-  opt :topic,   'SNS topic',                short: '-t'
+  opt :execute, 'command to run',    type: :string,       short: '-e'
+  opt :config,  'config file location',  type: :string,   short: '-c'
+  opt :topic,   'SNS topic',      type: :string,          short: '-t'
 end
 
 def get_output(command)
   Open3.popen3(command) { |stdin, stdout, stderr, wait_thr| stdout.read }
 end
 
-def send_to_sns(topic ,msg)
+def send_to_sns(topic, msg)
   sns = AWS::SNS.new
   sns.topics[topic].publish(msg)
 end
@@ -37,9 +37,9 @@ def duration(block)
   }
 end
 
-block = -> do
+block = lambda do
   aws_config(opts.config)
   get_output(opts.execute)
 end
 
-send_to_sns(opts.topic, duration(block).to_json )
+send_to_sns(opts.topic, duration(block).to_json)
