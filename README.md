@@ -1,5 +1,6 @@
 # Fewbytes::Sns
 
+Command line wrapper with extended output options.
 Command line tool for sending AWS SNS messages 
 
 ## Installation

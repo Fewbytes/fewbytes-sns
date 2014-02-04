@@ -1,22 +1,13 @@
-# require 'trollop'
-require 'open3'
-# # TODO:
+#!/usr/bin/env ruby -wU
 
-# opts = Trollop.options do
-#   opt :config, 'Configuration file location', type:  :string, short: '-c'
-# end
+String.class_eval do
+  puts self
+end
+String.class_eval do
+  def with_cat
+    'kitty says: ' + self
+  end
+end
 
-# puts opts[:config]
+puts 'miaow'.with_cat
 
-# def syscall(*cmd)
-#   begin
-#     stdout, stderr, status = Open3.capture3(*cmd)
-#     status.success? && stdout.slice!(0..-(1 + $/.size)) 
-#   end
-# end # !> global variable `$INPUT_RECORD_SEPARATOR' not initialized
-
-# puts syscall('ls')
-
-# system('ls -al', out: ['/tmp/log', 'a'], err: ['/tmp/log.err', 'a'])
-output = Open3.popen3("ls") { |stdin, stdout, stderr, wait_thr| stdout.read }
-p output
