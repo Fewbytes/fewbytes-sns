@@ -5,51 +5,41 @@ require 'yaml'
 require 'aws-sdk'
 require 'open3'
 require 'trollop'
+require 'json'
 
 opts = Trollop.options do
-  opt :command, 'command to run', type: :string, short: '-c'
-  # opt :sns,      'output to SNS', multi: true
+  opt :execute, 'command to run',           short: '-e'
+  opt :config,  'config file location',     short: '-c'
+  opt :topic,   'SNS topic',                short: '-t'
 end
 
-def run_command(command)
+def get_output(command)
+  Open3.popen3(command) { |stdin, stdout, stderr, wait_thr| stdout.read }
+end
+
+def send_to_sns(topic ,msg)
   sns = AWS::SNS.new
-  topic = 'arn:aws:sns:us-east-1:702076609359:shd_test' # !> global variable `$INPUT_RECORD_SEPARATOR' not initialized
-  t = sns.topics[topic]
-  start_time = Time.now
-  t.publish("#{start_time} of #{command}")
-  output = Open3.popen3(command) {|stdin, stdout, stderr, wait_thr| stdout.read}
-  t.publish("#{output} of #{command}")
-  end_time = Time.now
-  t.publish("#{end_time} of #{command}")
-  duration = end_time - start_time
-  t.publish("#{duration} of #{command}")
-  # message = {
-  #   'output' => output,
-  #   'start_time' => start_time,
-  #   'end_time' => end_time,
-  #   'duration' => duration,
-  #   'command' => command
-  # }
+  sns.topics[topic].publish(msg)
 end
 
-# def sns_config
-# AWS Configuration
-## config file location
-config_file = File.join(File.dirname(__FILE__), 'config.yml')
-fail 'no configuration' unless File.exist?(config_file)
+def aws_config(file)
+  fail 'wrong location' unless File.exist?(file)
+  config = YAML.load(File.read(file))
+  fail 'Wrong YAML format' unless config.kind_of?(Hash)
+  AWS.config(config)
+end
 
-## config to YAML
-config = YAML.load(File.read(config_file))
-fail 'Wrong YAML format' unless config.kind_of?(Hash)
-# end
-AWS.config(config)
+def duration(block)
+  {
+    'start' => Time.new,
+    'output' =>  block.call,
+    'stop' => Time.new
+  }
+end
 
-## load config
+block = -> do
+  aws_config(opts.config)
+  get_output(opts.execute)
+end
 
-# Find the topic by using the topic's arn
-
-# Publish the message to the topic
-
-run_command(opts.command)
-#   puts "#{d} == #{s}"
-# end
+send_to_sns(opts.topic, duration(block).to_json )
