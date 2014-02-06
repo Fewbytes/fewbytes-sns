@@ -19,7 +19,13 @@ Or install it yourself as:
 
 ## Usage
 
-    fb-sns <TOPIC_ARN> <MESSAGE>
+    sns 
+
+    Options:
+  --execute, -e <s>:   command to run
+   --config, -c <s>:   config file location
+    --topic, -t <s>:   SNS topic
+         --help, -h:   Show this message
 
 ## Configuration
 
