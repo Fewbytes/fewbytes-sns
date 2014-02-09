@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'yaml'
 require 'aws-sdk'
-require 'open3'
+require 'open4'
 require 'trollop'
 require 'json'
 
@@ -14,7 +14,14 @@ opts = Trollop.options do
 end
 
 def get_output(command)
-  Open3.popen3(command) { |stdin, stdout, stderr, wait_thr| stdout.read }
+  Open4.popen4(command) do | pid, stdin, stdout, stderr |
+    @status = {
+      'pid' => pid,
+      'stdout' => stdout.read.strip,
+      'stderr' => stderr.read.strip
+    }
+  end
+  @status   
 end
 
 def send_to_sns(topic, msg)
@@ -38,8 +45,12 @@ def duration(block)
 end
 
 block = lambda do
-  aws_config(opts.config)
+  # aws_config(opts.config)
   get_output(opts.execute)
 end
 
-send_to_sns(opts.topic, duration(block).to_json)
+# send_to_sns(opts.topic, duration(block).to_json)
+puts duration(block)['output']['pid']
+puts duration(block)['output']['stdout']
+
+
